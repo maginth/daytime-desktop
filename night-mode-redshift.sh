@@ -1,5 +1,5 @@
 #!/bin/bash
-# cinnamon Night Mode controlled by Redshift
+# Night Mode controlled by Redshift
 #
 # adapted from:
 # https://github.com/bimlas/xfce4-night-mode
@@ -10,7 +10,7 @@ else
   mode='day'
 fi
 
-"$(dirname "$0")/cinnamon-night-mode.sh" "$mode" | sed '/<tool>/,/<\/tool>/ d'
+"$(dirname "$0")/night-mode.sh" "$mode" | sed '/<tool>/,/<\/tool>/ d'
 echo '<tool>
   Night mode defined by RedShift
   Click to toggle mode for a while

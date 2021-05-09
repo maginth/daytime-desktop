@@ -1,14 +1,20 @@
 #!/bin/bash
-# Cinnamon Night Mode: Switch between light and dark variants of a theme
+# Night Mode: Switch between light and dark variants of a theme
 #
 # adapted from:
 # https://github.com/bimlas/xfce4-night-mode
+
 
 function show_usage()
 {
   progname=`basename "$0"`
   echo "$progname [night|day|toggle]"
 }
+
+if [[ $1 == wallpaper ]]; then
+  show_usage
+  exit 1
+fi
 
 function parse_args()
 {
@@ -25,11 +31,14 @@ function parse_args()
 }
 
 function _conf_tool() {
-  if gsettings --version >> /dev/null; then
+  if gsettings --version >> /dev/null; then #cinnamon
     gsettings $1 $2 $3 $4
-  elif xconf-query --version >> /dev/null; then
+  elif xconf-query --version >> /dev/null; then #xfce
     __set= [[ $1 == 'set' ]] && echo "--set $4"
     xfconf-query --channel $2 --property $3 $__set
+  else
+    >&2 echo "no supported configuration tool detected"
+    exit 1
   fi
 }
 
@@ -42,16 +51,11 @@ function set_night_mode()
     show_usage
     exit 1
   fi
-
-  _conf_tool set $2 $3 "$new_theme"
-}
-
-function set_conf() {
-  current_theme=`_conf_tool get $1 $2 | sed s/\'//g`
-  if [[ $current_theme == $3 ]]; then
+  if [[ -z $new_theme ]] || [[ $new_theme == $current_theme ]]; then
     return
   fi
-  _conf_tool set $1 $2 $3
+
+  _conf_tool set $2 $3 "$new_theme"
 }
 
 function _set_toggle()
@@ -66,6 +70,17 @@ function _set_toggle()
 function _is_dark()
 {
   echo "$1" | grep '\-Dark$' > /dev/null
+}
+
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+wallpaper_folder=$SCRIPTPATH/hour-wallpapers
+
+function _set_wallpaper() {
+  list=( `ls -1 $wallpaper_folder | grep \`date +%H\`` )
+
+  declare -i len=${#list[@]} m=`date +%_M` M=60
+
+  echo "file://$wallpaper_folder/${list[$(( $len*$m/$M ))]}"
 }
 
 function _set_day()
@@ -102,6 +117,10 @@ if gsettings --version >> /dev/null; then
   # Desktop theme
   set_night_mode $mode org.cinnamon.theme name
 
+  if [[ -d $wallpaper_folder ]]; then
+    set_night_mode wallpaper org.cinnamon.desktop.background picture-uri
+  fi
+
 elif xconf-query --version >> /dev/null; then
   # GTK theme
   set_night_mode $mode xsettings /Net/ThemeName
@@ -114,30 +133,6 @@ elif xconf-query --version >> /dev/null; then
 
 fi
 
-
-SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-folder=$SCRIPTPATH/hour-wallpapers
-echo $SCRIPTPATH
-echo $folder
-
-if [[ -d $folder ]]
-then
-
-  list=( `ls -1 $folder | grep \`date +%H\`` )
-
-  declare -i len=${#list[@]} m=`date +%_M` M=60
-
-  selected="'file://$folder/${list[$(( $len*$m/$M ))]}'"
-
-  current=`_conf_tool get org.cinnamon.desktop.background picture-uri`
-
-
-  if [ $len != 0 ] && [ $selected != $current ]
-  then
-    echo change to wallpaper $selected
-    _conf_tool set org.cinnamon.desktop.background picture-uri $selected
-  fi
-fi
 
 #  echo 24000 | sudo tee /sys/class/backlight/intel_backlight/brightness
 
