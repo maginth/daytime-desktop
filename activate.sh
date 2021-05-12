@@ -10,8 +10,9 @@ crontab -l | grep -v $script > tmp_cron
 
 if [ "$1" != false ]
 then
-
-	echo "*/5 * * * * set -a; . $SCRIPTPATH/env-for-cron ; bash $SCRIPTPATH/$script 2> $SCRIPTPATH/err-log-cron" >> tmp_cron
+	COMMAND="set -a; . $SCRIPTPATH/env-for-cron ; bash $SCRIPTPATH/$script 2> $SCRIPTPATH/err-log-cron"
+	echo "*/5 * * * * $COMMAND" >> tmp_cron
+	echo "@reboot $COMMAND" >> tmp_cron
 
 	echo "
 Theme color and wallpaper will change automaticaly according to the time of the day.
@@ -26,3 +27,6 @@ else
 fi
 crontab tmp_cron
 rm tmp_cron
+
+
+#TODO add startup launcher
