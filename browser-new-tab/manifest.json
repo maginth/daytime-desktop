@@ -1,0 +1,16 @@
+{
+  "name": "My custom new tab page",
+  "description": "Overrides the new tab page with hour changing wallpaper",
+  "version": "1.0",
+  "incognito": "spanning",
+  "chrome_url_overrides": {
+    "newtab": "tab.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+        "id": "hour-change-wallpaper@aekuo.com",
+        "strict_min_version": "54.0"
+      }
+  },
+  "manifest_version": 3
+}

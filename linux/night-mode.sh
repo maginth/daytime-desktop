@@ -73,14 +73,23 @@ function _is_dark()
 }
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-wallpaper_folder=$SCRIPTPATH/hour-wallpapers
+wallpaper_folder=$SCRIPTPATH/../hour-wallpapers
 
 function _set_wallpaper() {
-  list=( `ls -1 $wallpaper_folder | grep \`date +%H\`` )
+  h_now=`date +%H`
+  h=$h_now
+  while :
+  do
+    list=( `ls -1 $wallpaper_folder | grep $h` )
+    len=${#list[@]}
+    h=$((($h + 23) % 24))
+    if [ $len -ne 0 ] || [ $h -ne h_now ]
+    then
+      break  
+    fi
+  done
 
-  declare -i len=${#list[@]} m=`date +%_M` M=60
-
-  echo "file://$wallpaper_folder/${list[$(( $len*$m/$M ))]}"
+  echo "file://$wallpaper_folder/${list[$(( $len*`date +%_M`/60 ))]}"
 }
 
 function _set_day()
