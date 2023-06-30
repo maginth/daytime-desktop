@@ -4,7 +4,7 @@ This tool helps to sync our ciscardian clock and to feel time passing while in f
 
 == Instalation
 
-Double click on linux/activate.sh (tested on mint cinamon desktop, readshift must be activated)
+Double click on linux/activate.sh (tested on mint cinamon and xfce desktops, readshift must be activated)
 or windows/activate.vbs (tested on windows 10/11)
 
 == hour wallpapers
@@ -21,3 +21,4 @@ If several wallpaper are assigned to the same hour, the hour will be split equal
 - on windows search bar, look for _night light_ settings to have a warmer screen temperature at night.
 - for visual studio code, look for the _Auto Day Night Theme Switcher_ extension
 - for intellij idea, look for the _Day And Night_ extension
+- original plugin for xfce only https://github.com/bimlas/xfce4-night-mode
